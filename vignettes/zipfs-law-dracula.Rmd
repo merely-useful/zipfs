@@ -1,0 +1,201 @@
+---
+title: "Zipf's Law example with Dracula"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{zipfs-law-dracula}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message = FALSE}
+library(tidyverse)
+library(here)
+```
+
+```{r}
+dracula <- read_lines(here("inst", "extdata", "dracula.txt"))
+```
+
+## Book Summaries
+
+Do something with this?
+```{r}
+dracula[10:17] 
+```
+
+## Word Counts
+
+From https://merely-useful.github.io/py-rse/scripting.html#scripting-wordcount
+```
+the,8036
+and,5896
+i,4712
+to,4540
+of,3738
+a,2961
+in,2558
+he,2543
+that,2455
+it,2141
+```
+
+### tidytext approach
+
+Word frequency:
+```{r}
+library(tidytext)
+dracula_tbl <- tibble(text = dracula)
+
+dracula_freq <- 
+  dracula_tbl %>% 
+  unnest_tokens("word", text) %>% 
+  count(word, sort = TRUE)
+dracula_freq
+```
+
+Doesn't match output in py-rse. Why?
+
+### stringr approach
+
+```{r}
+dracula <- read_file(here("inst", "extdata", "dracula.txt"))
+
+chunks <- 
+  dracula %>% 
+  str_to_lower() %>% 
+  # split by one or more whitespace characters
+  str_split("\\s+")
+
+words <- 
+  # str_split() always returns a list
+  chunks[[1]] %>% 
+  # remove punctuation
+  str_remove_all(pattern = "[[:punct:]]+")
+  
+# get rid of empty strings
+words <- words[words != ""]  
+
+words %>% table() %>% 
+  sort(decreasing = TRUE) %>% 
+  head(n = 10)
+```
+
+Much closer to py-rse, only off by 1 on "the".
+
+I'm removing all punctuation but in py-rse, we only remove leading and trailing punctuation. Is that the difference?
+
+```{r}
+words <- 
+  # str_split() always returns a list
+  chunks[[1]] %>% 
+  # remove punctuation
+  str_remove(pattern =  "^[[:punct:]]+") %>% 
+  str_remove(pattern =  "[[:punct:]]+$") 
+
+# get rid of empty strings
+words <- words[words != ""]  
+
+words %>% table() %>% 
+  sort(decreasing = TRUE) %>% 
+  head(n = 10)  
+```
+
+
+### base approach
+
+```{r}
+dracula <- read_file(here("inst", "extdata", "dracula.txt"))
+chunks <- strsplit(tolower(dracula), split = "\\s+")
+
+words2 <- gsub(pattern = "[[:punct:]]+", replacement = "", chunks[[1]]) 
+words <- words[words != ""]  
+
+word_freq <- table(words) 
+head(sort(word_freq, decreasing = TRUE), n = 10)
+
+dracula_freq <- tibble(word = names(word_freq), n = as.numeric(word_freq)) %>% 
+  arrange(desc(n))
+```
+
+
+## Plots
+
+Compare to: https://merely-useful.github.io/py-rse/figures/git-cmdline/plot-initial.png
+
+```{r}
+dracula_freq %>% 
+  ggplot(aes(n, 1/rank(desc(n), ties = "max"))) +
+  geom_point() +
+  labs(
+    title = "Inverse rank frequency plot",
+    x = "Word frequency",
+    y = "Inverse Rank")
+```
+
+Compare to: https://merely-useful.github.io/py-rse/figures/git-cmdline/plot-loglog.png
+
+```{r}
+dracula_freq %>% 
+  ggplot(aes(n, rank(desc(n), ties = "max"))) +
+  geom_line() +
+  geom_point() +
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(
+    title = "Rank frequency plot",
+    x = "Word frequency",
+    y = "Rank")
+```
+
+## Fit
+
+```{r}
+dpower <- function(x, alpha){
+  beta <- 1/alpha + 1
+  (1/x)^(beta - 1) - (1/(x + 1))^(beta - 1)
+}
+
+# negative log likelihood l(beta) = -sum(log(f(x)))
+nllpower <- function(alpha, x){
+  - sum(log(dpower(x = x, alpha = alpha)))
+}
+
+# Optimizer settings from @moreno2016large
+mle <- optim(1.5, nllpower, x = dracula_freq$n, 
+  lower = 1, upper = 4, 
+  hessian = TRUE, method = "Brent")
+
+(alpha_hat <- mle$par)
+# Standard error from ML theory
+se <- sqrt(1/mle$hessian)[1, 1]
+
+# Asymptotic 95% CI
+(ci <- alpha_hat + c(-1, 1) * 1.96 * se)
+```
+
+
+Compare to: https://merely-useful.github.io/py-rse/figures/git-advanced/dracula-fit.png
+```{r}
+n <- nrow(dracula_freq)
+dracula_freq %>% 
+  ggplot(aes(n, rank(desc(n), ties = "max"))) +
+  geom_point(size = 0.5, color = "grey50") +
+  geom_abline(
+    intercept = log10(n),
+    slope = - 1/alpha_hat
+  ) + 
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(
+    title = "Rank frequency plot with fitted power law",
+    x = "Word frequency",
+    y = "Rank"
+    )
+```
