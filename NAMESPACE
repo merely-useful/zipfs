@@ -2,4 +2,5 @@
 
 export("%>%")
 export(book_meta)
+export(count_words)
 importFrom(magrittr,"%>%")
