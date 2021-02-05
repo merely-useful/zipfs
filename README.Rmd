@@ -1,0 +1,38 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# zipfs
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+## Curated R History
+
+An attempt to keep track of the R code run on the Console in the act of creating the package.
+
+### Add dracula data
+
+```{r, eval = FALSE}
+use_data_raw("dracula")
+# Edit data-raw/dracula.R
+# Source data-raw/dracula.R
+devtools::load_all(".")
+dracula # Check data available
+use_r("dracula")
+# Add data docs to R/dracula.R
+devtools::document(".")
+?dracula # Check docs
+```
+
