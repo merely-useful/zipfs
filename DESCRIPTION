@@ -22,4 +22,6 @@ Depends:
 Imports: 
     tibble,
     stringr,
-    magrittr
+    magrittr,
+    ggplot2,
+    dplyr
