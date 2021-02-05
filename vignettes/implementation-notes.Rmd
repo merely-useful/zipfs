@@ -1,5 +1,5 @@
 ---
-title: "Zipf's Law example with Dracula"
+title: "Implementation Notes"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{zipfs-law-dracula}
@@ -7,12 +7,18 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+A place to keep track of code, notes and brainstorming for the zipfs package.
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 ```
+
+Also look into  gutenbergr https://github.com/ropensci/gutenbergr
+
+# Example Code 
 
 ```{r setup, message = FALSE}
 library(tidyverse)
@@ -28,6 +34,40 @@ dracula <- read_lines(here("inst", "extdata", "dracula.txt"))
 Do something with this?
 ```{r}
 dracula[10:17] 
+```
+
+```{r}
+extract_element <- function(text, element){
+  text  %>% 
+  str_subset(element) %>% 
+  str_remove(paste0(element, ": "))
+}
+
+dracula[10:17] %>% 
+  get_meta("Author")
+
+book_meta <- function(text){
+  tibble(
+    author = get_meta(text, "Author"),
+    title = get_meta(text, "Title"),
+    release = get_meta(text, "Release Date")
+  )
+}
+
+dracula[10:17] %>% 
+  book_meta()
+```
+
+Using this to summarise all books:
+```{r}
+books <- tibble(
+  file = fs::dir_ls(here("inst", "extdata"), glob = "*.txt"),
+)
+
+books %>% 
+  rowwise(file) %>% 
+  mutate(text = list(read_lines(file))) %>% 
+  summarise(book_meta(text[1:20]), .groups = "rowwise")
 ```
 
 ## Word Counts
@@ -65,17 +105,17 @@ Doesn't match output in py-rse. Why?
 ### stringr approach
 
 ```{r}
-dracula <- read_file(here("inst", "extdata", "dracula.txt"))
+dracula <- read_lines(here("inst", "extdata", "dracula.txt"))
 
 chunks <- 
   dracula %>% 
   str_to_lower() %>% 
   # split by one or more whitespace characters
-  str_split("\\s+")
+  str_split("\\s+") %>% 
+  unlist()
 
 words <- 
-  # str_split() always returns a list
-  chunks[[1]] %>% 
+  chunks %>% 
   # remove punctuation
   str_remove_all(pattern = "[[:punct:]]+")
   
@@ -94,7 +134,7 @@ I'm removing all punctuation but in py-rse, we only remove leading and trailing 
 ```{r}
 words <- 
   # str_split() always returns a list
-  chunks[[1]] %>% 
+  chunks %>% 
   # remove punctuation
   str_remove(pattern =  "^[[:punct:]]+") %>% 
   str_remove(pattern =  "[[:punct:]]+$") 
@@ -112,9 +152,9 @@ words %>% table() %>%
 
 ```{r}
 dracula <- read_file(here("inst", "extdata", "dracula.txt"))
-chunks <- strsplit(tolower(dracula), split = "\\s+")
+chunks <- unlist(strsplit(tolower(dracula), split = "\\s+"))
 
-words2 <- gsub(pattern = "[[:punct:]]+", replacement = "", chunks[[1]]) 
+words2 <- gsub(pattern = "[[:punct:]]+", replacement = "", chunks) 
 words <- words[words != ""]  
 
 word_freq <- table(words) 
@@ -168,6 +208,7 @@ nllpower <- function(alpha, x){
 }
 
 # Optimizer settings from @moreno2016large
+# fix lower and upper for using alpha as parameter not beta
 mle <- optim(1.5, nllpower, x = dracula_freq$n, 
   lower = 1, upper = 4, 
   hessian = TRUE, method = "Brent")
@@ -199,3 +240,89 @@ dracula_freq %>%
     y = "Rank"
     )
 ```
+
+# Brainstorming Interface
+
+```{r}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+
+What will the actual vignette look like?
+
+```{r}
+file <- here("inst", "extdata", "dracula.txt") 
+word_freq <- count_words(path = dracula_file)
+
+plot_rank(word_freq, "n")
+plot_rank(word_freq, n)
+plot_rank(word_freq$n)
+
+fit <- fit_zipfs(word_freq$n)
+fit <- fit_zipfs(word_freq)
+fit <- fit_zipfs(word_freq, n)
+fit
+# slope, alpha = ?, se = ?, intercept?
+
+
+
+fit_zipfs(word_freq$n)
+
+# This way of using it seems useful
+books %>% 
+  group_by(title) %>% 
+  summarize(fit_zips(n))
+
+# Or alternatively
+books %>% 
+  group_by(title) %>% 
+  summarise(alpha = fit_zips(n))
+
+dracula %>% 
+  word_count() %>% 
+  summarise(fit_zipfs(n))
+
+# Suggests signature
+fit_zips <- function(n){}
+
+# What should output be?
+# something that prints OK alone,
+# fits in tibble, and
+# easily used by plotting function to add a line
+# just alpha?  SE as well?
+
+# But for plotting, might be easier to 
+# use ggplot syntax, i.e. tibble in, then specify column, 
+# allows for facettng, coloring etc.
+# but where should dots go ...?
+
+
+# Could use S3 so can have an `autoplot()` function -> `plot()` method
+# for word_count data (i.e. make output from `count_words()`, have a class).
+# But S3 is probably beyond the audience here
+plot(word_freq)
+
+# Technically only need n to make plot (and fit data and add line)
+# so maybe just having the interface as
+plot_rank(word_freq$n, add_fit = TRUE)
+# no way to control colors, lines, other aesthetics.
+
+# Then can't do
+books %>% 
+  plot_rank() +
+  facet_wrap(~ title)
+
+# But could do
+books %>% 
+  rowwise() %>% 
+  mutate(plot = plot_rank(n, add_fit = TRUE)) %>% 
+  pull(plot) %>% 
+  walk(print) # or save out to files
+```
+
+
+```{r}
+files <- fs::dir_ls(here("inst", "extdata"), glob = ".txt")
+```
+
+

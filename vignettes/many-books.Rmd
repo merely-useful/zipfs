@@ -1,0 +1,51 @@
+---
+title: "An example of using zipfs on a directory of books"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{many-books}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE # since package isn't written yet
+)
+```
+
+```{r setup}
+library(zipfs)
+```
+
+The package zipfs provides a collection of texts downloaded from Gutenberg in the `extdata/` folder:
+```{r}
+zipfs_data_dir <- system.file("extdata", package = "zipfs")
+books <- tibble(
+  file = fs::dir_ls(zipfs_data_dir, glob = "*.txt")
+)
+books
+```
+
+Read in the all lines of each and get book meta data:
+```{r}
+books <- 
+  books %>% 
+  rowwise(file) %>% 
+  mutate(text = list(read_lines(file))) 
+
+book_summaries <- 
+  books %>% 
+  summarise(book_meta(text[1:20]), .groups = "rowwise")
+book_summaries
+```
+
+Count words in each book:
+```{r}
+books %>% 
+  rowwise(file, title) %>% 
+  summarise(count_words(text))
+```
+
+
