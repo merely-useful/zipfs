@@ -24,3 +24,20 @@ use_r("dracula")
 devtools::document(".")
 ?dracula # Check docs
 ```
+
+### Add book meta functions
+
+``` r
+use_r("book-meta")
+# Edit R/book-meta.R to add functions
+use_package("tibble")
+use_package("stringr")
+use_pipe()
+devtools::load_all(".")
+extract_element("Author: Bram Stoker", "Author")
+book_meta(dracula[1:20])
+# Code -> Insert Roxygen Skeleton
+# Edit Roxygen comment for `book_meta()`
+devtools::document()
+?book_meta
+```
