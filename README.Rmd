@@ -53,3 +53,22 @@ devtools::document()
 ?book_meta
 ```
 
+### Add `count_words()`
+
+```{r, eval = FALSE}
+use_r("count")
+# Edit count.R
+devtools::load_all(".")
+count_words(dracula)
+# Code -> Insert Roxygen Skeleton
+# Edit Roxygen comment for `count_words()`
+devtools::document()
+?count_words
+```
+
+### Add license
+
+```{r, eval = FALSE}
+use_mit_license("Charlotte Wickham")
+```
+
