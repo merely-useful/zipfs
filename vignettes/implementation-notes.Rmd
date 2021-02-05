@@ -44,13 +44,13 @@ extract_element <- function(text, element){
 }
 
 dracula[10:17] %>% 
-  get_meta("Author")
+  extract_element ("Author")
 
 book_meta <- function(text){
   tibble(
-    author = get_meta(text, "Author"),
-    title = get_meta(text, "Title"),
-    release = get_meta(text, "Release Date")
+    author = extract_element(text, "Author"),
+    title = extract_element(text, "Title"),
+    release = extract_element(text, "Release Date")
   )
 }
 
@@ -129,11 +129,10 @@ words %>% table() %>%
 
 Much closer to py-rse, only off by 1 on "the".
 
-I'm removing all punctuation but in py-rse, we only remove leading and trailing punctuation. Is that the difference?
+I'm removing all punctuation, but in py-rse we only remove leading and trailing punctuation. Is that the difference?
 
 ```{r}
 words <- 
-  # str_split() always returns a list
   chunks %>% 
   # remove punctuation
   str_remove(pattern =  "^[[:punct:]]+") %>% 
@@ -146,7 +145,7 @@ words %>% table() %>%
   sort(decreasing = TRUE) %>% 
   head(n = 10)  
 ```
-
+No.
 
 ### base approach
 
@@ -208,7 +207,7 @@ nllpower <- function(alpha, x){
 }
 
 # Optimizer settings from @moreno2016large
-# fix lower and upper for using alpha as parameter not beta
+# FIX: lower and upper for using alpha as parameter not beta
 mle <- optim(1.5, nllpower, x = dracula_freq$n, 
   lower = 1, upper = 4, 
   hessian = TRUE, method = "Brent")
@@ -319,10 +318,4 @@ books %>%
   pull(plot) %>% 
   walk(print) # or save out to files
 ```
-
-
-```{r}
-files <- fs::dir_ls(here("inst", "extdata"), glob = ".txt")
-```
-
 
