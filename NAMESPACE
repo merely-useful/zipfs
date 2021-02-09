@@ -3,5 +3,6 @@
 export("%>%")
 export(book_meta)
 export(count_words)
+export(fit_zipfs)
 export(plot_rank)
 importFrom(magrittr,"%>%")
