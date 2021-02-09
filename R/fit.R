@@ -12,10 +12,14 @@ nllpower <- function(beta, x){
 #' Estimate the power law parameter, \eqn{\alpha}, for Zipf's Law from a
 #' set of word frequencies.
 #'
-#' Estimated using maximum likelihood as outlined in:
-#' Moreno-Sánchez, Isabel, Francesc Font-Clos, and Álvaro Corral.
-#' 2016. “Large-Scale Analysis of Zipf’s Law in English Texts.”
-#' PLoS ONE 11 (1): e0147073. <https://doi.org/10.1371/journal.pone.0147073.>
+#' Moreno-Sanchez et al (2016) define \eqn{\alpha} (Eq. 1),
+#' \eqn{\beta} (Eq. 2) and the maximum likelihood estimation (mle)
+#' of \eqn{\beta} (Eq. 6).
+#'
+#' @references Moreno-Sanchez I, Font-Clos F, Corral A (2016)
+#' Large-Scale Analysis of Zipf's Law in English Texts.
+#'      PLoS ONE 11(1): e0147073.
+#'      <https://doi.org/10.1371/journal.pone.0147073>
 #'
 #' @param n A numeric vector containing word frequencies
 #'

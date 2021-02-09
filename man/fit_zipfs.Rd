@@ -17,12 +17,17 @@ Estimate the power law parameter, \eqn{\alpha}, for Zipf's Law from a
 set of word frequencies.
 }
 \details{
-Estimated using maximum likelihood as outlined in:
-Moreno-Sánchez, Isabel, Francesc Font-Clos, and Álvaro Corral.
-2016. “Large-Scale Analysis of Zipf’s Law in English Texts.”
-PLoS ONE 11 (1): e0147073. \url{https://doi.org/10.1371/journal.pone.0147073.}
+Moreno-Sanchez et al (2016) define \eqn{\alpha} (Eq. 1),
+\eqn{\beta} (Eq. 2) and the maximum likelihood estimation (mle)
+of \eqn{\beta} (Eq. 6).
 }
 \examples{
 word_freqs <- count_words(dracula)
 fit_zipfs(word_freqs$n)
+}
+\references{
+Moreno-Sanchez I, Font-Clos F, Corral A (2016)
+Large-Scale Analysis of Zipf's Law in English Texts.
+PLoS ONE 11(1): e0147073.
+\url{https://doi.org/10.1371/journal.pone.0147073}
 }
