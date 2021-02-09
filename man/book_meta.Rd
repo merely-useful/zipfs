@@ -10,7 +10,7 @@ book_meta(text)
 \item{text}{A character string of lines from a Gutenberg book}
 }
 \value{
-tibble with \code{author}, \code{title} and \code{release} columns.
+a one row tibble with \code{author}, \code{title} and \code{release} columns.
 }
 \description{
 Get book meta data from a Gutenberg book
