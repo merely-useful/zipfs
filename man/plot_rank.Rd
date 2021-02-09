@@ -4,10 +4,12 @@
 \alias{plot_rank}
 \title{Rank-frequency plot}
 \usage{
-plot_rank(n)
+plot_rank(n, add_fit = FALSE)
 }
 \arguments{
 \item{n}{Numeric vector of word frequencies}
+
+\item{add_fit}{Should a line with the fitted power law parameter be added?}
 }
 \value{
 ggplot2 plot object
@@ -16,7 +18,12 @@ ggplot2 plot object
 Plots the rank vs. frequency on log-log scales, useful for
 finding power law behaviour in word frequencies.
 }
+\details{
+The parameter used to produce the fitted line, can be directly computed
+using \code{\link[=fit_zipfs]{fit_zipfs()}}.
+}
 \examples{
 word_freqs <- count_words(dracula)
 plot_rank(word_freqs$n)
+plot_rank(word_freqs$n, add_fit = TRUE)
 }

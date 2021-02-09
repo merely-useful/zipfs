@@ -91,3 +91,13 @@ devtools::document()
 # Edit Roxygen comment for `fit_zipfs()`
 ?fit_zipfs
 ```
+
+### Update plot function to take `add_fit` argument
+
+``` r
+use_r("plot") # quick way to open file
+# Edit `plot_rank()` code and docs
+devtools::load_all()
+plot_rank(word_freqs$n, add_fit = TRUE)
+?plot_rank
+```
