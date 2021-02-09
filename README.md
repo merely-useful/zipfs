@@ -6,6 +6,11 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
+------------------------------------------------------------------------
+
+This wouldn’t be in the pacakge README, but trying to keep it around in
+case it is useful.
+
 ## Curated R History
 
 An attempt to keep track of the R code run on the Console in the act of
@@ -100,4 +105,15 @@ use_r("plot") # quick way to open file
 devtools::load_all()
 plot_rank(word_freqs$n, add_fit = TRUE)
 ?plot_rank
+```
+
+### More tests for `book_meta()`
+
+``` r
+use_test("book-meta")
+# Edit tests, running expectation as I go
+devtools::test()
+use_r()
+# Add input check to `book_meta()`
+devtools::test()
 ```

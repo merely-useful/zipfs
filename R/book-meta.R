@@ -14,6 +14,9 @@ extract_element <- function(text, element){
 #' @examples
 #' book_meta(dracula[1:20])
 book_meta <- function(text){
+  if(!is.character(text)){
+    stop("`text` must be a character vector.", call. = FALSE)
+  }
   tibble::tibble(
     author = extract_element(text, "Author"),
     title = extract_element(text, "Title"),
