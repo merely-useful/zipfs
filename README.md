@@ -60,3 +60,34 @@ devtools::document()
 ``` r
 use_mit_license("Charlotte Wickham")
 ```
+
+### Add plot function
+
+``` r
+use_r("plot")
+# Edit R/plot.R
+devtools::load_all(".")
+plot_rank(1:100)
+# Insert ROcygen skeleton
+# Edit roxygen comment for `plot_rank()`
+devtools::document()
+?rank
+word_freqs <- count_words(dracula)
+plot_rank(work_freqs$n)
+```
+
+### Add fit function
+
+``` r
+use_r("fit")
+# Edit R/fit.R
+devtools::load_all(".")
+word_freqs <- count_words(dracula)
+fit_zipfs(word_freqs$n)
+use_test()
+# Edit tests/testthat/test-fit.R
+devtools::test()
+devtools::document()
+# Edit Roxygen comment for `fit_zipfs()`
+?fit_zipfs
+```
