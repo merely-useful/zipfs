@@ -10,8 +10,7 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  eval = FALSE # since package isn't written yet
+  comment = "#>"
 )
 ```
 
@@ -19,17 +18,18 @@ knitr::opts_chunk$set(
 library(zipfs)
 ```
 
-A character string of lines from the book Dracula.  Obtained from Gutenberg
+The zipfs package includes `dracula, a character string of lines from the book Dracula, obtained from [Gutenberg](http://www.gutenberg.org/ebooks/345):
 ```{r}
 ?dracula
 dracula[1:20]
 ```
 
 
-Provide `book_meta()` to extract useful book meta data from a Gutenberg book, need to provide the relevant lines from header:
+Use `book_meta()` to extract useful book meta data from a Gutenberg book.  You need to provide the lines from header:
 ```{r}
 book_meta(dracula[1:20])
 ```
+
 
 `count_words()` counts occurrences of every word in a character string
 ```{r}
@@ -37,24 +37,25 @@ word_frequency <- count_words(dracula)
 word_frequency
 ```
 
+
 A rank frequency plot can be created by passing in the counts to  `plot_rank()`:
 ```{r}
-word_frequency %>% 
-  pull(n)
+word_frequency$n %>% 
   plot_rank()
 ```
 
 A line based on the maximum likelihood estimate for $\alpha$ can be
 added to the plot by adding the argument `add_fit = TRUE`:
 ```{r}
-word_frequency %>% 
-  pull(n)
+word_frequency$n %>% 
   plot_rank(add_fit = TRUE)
 ```
 
 Or, if only the estimate is desired, it can be computed with `fit_zipfs()`, again passing in only the counts:
 ```{r}
-word_frequency %>% 
-  pull(n) %>% 
+word_frequency$n %>% 
   fit_zipfs()
 ```
+
+
+
