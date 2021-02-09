@@ -17,6 +17,11 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(zipfs)
+library(tibble)
+library(dplyr)
+library(readr)
+library(tidyr)
+library(purrr)
 ```
 
 The package zipfs provides a collection of texts downloaded from Gutenberg in the `extdata/` folder:
@@ -35,7 +40,7 @@ books <-
   rowwise(file) %>% 
   mutate(text = list(read_lines(file))) 
 
-book_summaries <- 
+books_summaries <- 
   books %>% 
   summarise(book_meta(text[1:20]), .groups = "rowwise")
 book_summaries
@@ -43,9 +48,50 @@ book_summaries
 
 Count words in each book:
 ```{r}
-books %>% 
-  rowwise(file, title) %>% 
+word_freqs <- books %>% 
+  rowwise(file) %>% 
   summarise(count_words(text))
+word_freqs
 ```
 
+Estimate the power law parameter for each book:
+```{r}
+word_freqs %>% 
+  group_by(file) %>% 
+  summarise(alpha = fit_zipfs(n)) %>% 
+  arrange(alpha)
+```
+Create rank plots for each book, 
+THIS DOESN'T WORK
+```{r, error = TRUE}
+zipfs_plots <- word_freqs %>% 
+  summarise(plot = list(plot_rank(n)))
+zipfs_plots$plot[[1]]
+```
+
+
+```{r, error = TRUE}
+zipfs_plots <- word_freqs %>% 
+  group_by(file) %>% 
+  nest(data = c(word, n)) %>% 
+  rowwise() %>% 
+  mutate(plot = list(plot_rank(data$n)))
+zipfs_plots$plot[[1]]
+```
+
+```{r}
+tmp <- word_freqs %>% 
+  group_by(file) %>% 
+  nest(data = c(word, n))
+plot_rank(tmp$data[[1]]$n)
+```
+
+purrr approach
+```{r}
+zipfs_plots <- word_freqs %>% 
+  group_by(file) %>% 
+  nest(data = c(word, n)) %>% 
+  mutate(plot = map(data, ~ plot_rank(.$n, add_fit = TRUE)))
+walk(zipfs_plots$plot, print)
+```
 
