@@ -152,3 +152,15 @@ use_r()
 devtools::test()
 ```
 
+
+### Getting pkgdown website
+
+```{r, eval = FALSE}
+usethis::use_pkgdown()
+pkgdown::build_site()
+# Preview and edit DESCRIPTION, README etc.
+usethis::use_github_pages()
+usethis::use_github_action("pkgdown")
+# Commit and Push
+```
+

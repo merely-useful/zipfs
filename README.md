@@ -163,3 +163,14 @@ use_r()
 # Add input check to `book_meta()`
 devtools::test()
 ```
+
+### Getting pkgdown website
+
+``` r
+usethis::use_pkgdown()
+pkgdown::build_site()
+# Preview and edit DESCRIPTION, README etc.
+usethis::use_github_pages()
+usethis::use_github_action("pkgdown")
+# Commit and Push
+```
