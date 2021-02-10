@@ -226,6 +226,17 @@
 <span class="co"># Add input check to `book_meta()`</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
+<div id="getting-pkgdown-website" class="section level3">
+<h3 class="hasAnchor">
+<a href="#getting-pkgdown-website" class="anchor"></a>Getting pkgdown website</h3>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_pkgdown</span><span class="op">(</span><span class="op">)</span>
+<span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_site.html">build_site</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co"># Preview and edit DESCRIPTION, README etc.</span>
+<span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_github_pages</span><span class="op">(</span><span class="op">)</span>
+<span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_github_action</span><span class="op">(</span><span class="st">"pkgdown"</span><span class="op">)</span>
+<span class="co"># Commit and Push</span></code></pre></div>
+</div>
 </div>
 </div>
   </div>
