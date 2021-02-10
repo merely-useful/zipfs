@@ -26,3 +26,4 @@ Imports:
     ggplot2,
     dplyr
 Config/testthat/edition: 3
+URL: https://merely-useful.github.io/zipfs

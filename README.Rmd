@@ -161,6 +161,11 @@ pkgdown::build_site()
 # Preview and edit DESCRIPTION, README etc.
 usethis::use_github_pages()
 usethis::use_github_action("pkgdown")
-# Commit and Push
+# Commit and Push 
+# Push failed, had to Pull to get gh-pages branch?
+
+# In dev version of usethis, this replaces all of above
+# and adds links in useful places
+usethis::use_pkgdown_github_pages()
 ```
 
