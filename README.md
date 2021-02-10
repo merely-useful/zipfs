@@ -8,10 +8,56 @@
 
 ------------------------------------------------------------------------
 
-This wouldn’t be in the pacakge README, but trying to keep it around in
-case it is useful.
+The zipfs pacakge contains functions to help fit Zipf’s Law to book
+texts from the Gutenberg project.
+
+## Installation
+
+This package isn’t on CRAN, but you can install it from GitHub with:
+
+``` r
+# install.packages("remotes")
+remotes::install_github("merely-useful/zipfs")
+```
+
+## Usage
+
+``` r
+library(zipfs)
+text <- c("Star light, star bright,
+    First star I see tonight;
+    I wish I may, I wish I might,
+    Have the wish I wish tonight.")
+(word_freq <- count_words(text))
+#> # A tibble: 12 x 2
+#>    word        n
+#>    <chr>   <dbl>
+#>  1 i           6
+#>  2 wish        4
+#>  3 star        3
+#>  4 tonight     2
+#>  5 bright      1
+#>  6 first       1
+#>  7 have        1
+#>  8 light       1
+#>  9 may         1
+#> 10 might       1
+#> 11 see         1
+#> 12 the         1
+plot_rank(word_freq$n, add_fit = TRUE)
+```
+
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+
+``` r
+fit_zipfs(word_freq$n)
+#> [1] 0.6458106
+```
 
 ## Curated R History
+
+This wouldn’t be in the pacakge README, but trying to keep it around in
+case it is useful.
 
 An attempt to keep track of the R code run on the Console in the act of
 creating the package.
